@@ -25,7 +25,7 @@ The template.md files are for copying, not editing. Create your own completion f
    - `students/YOUR-NAME/challenge-2.md`
    - etc.
 4. **Copy the template** content from `challenge-N/template.md` into your file
-5. **Fill it out** with your actual experience (be honest, be specific)
+5. **Fill it out** with your actual experience (be honest, be specific). For Challenge 2, also submit `students/YOUR-NAME/MORNING-TAPE.md`; sanitize any private operating details before publishing.
 6. **Commit and push** to your fork
 7. **Submit a PR** back to the main repo
 8. **Wait for review** - automated checks + human review
@@ -44,7 +44,7 @@ The template.md files are for copying, not editing. Create your own completion f
 
 **What TO do:**
 - ✅ Fork first, always
-- ✅ Create your own file in `completed/` or as `reflection.md`
+- ✅ Create your own file at `students/YOUR-NAME/challenge-N.md`
 - ✅ Be honest about failures and struggles
 - ✅ Take your time - this is about learning, not speed
 
@@ -75,7 +75,7 @@ Each challenge should:
 
 ## Review Process
 
-1. Automated checks run on every PR (see `.github/workflows/validate.yml`)
+1. Shared-course checks run for course changes; [student-specific structure checks](STUDENT-VALIDATION.md) run for `students/**` changes. Automated results are not evidence of learning or graduation.
 2. Human reviewers check for:
    - Completion of all required sections
    - Thoughtful reflection (not just checkbox completion)

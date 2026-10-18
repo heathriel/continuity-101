@@ -1,0 +1,54 @@
+name: Check Student Submission Structure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'students/**'
+
+permissions:
+  contents: read
+
+jobs:
+  student-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Run only the base revision's validator and templates. Student data is
+      # checked out separately, with no credentials persisted and no scripts run.
+      - name: Checkout trusted course revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: course
+          persist-credentials: false
+      - name: Checkout submission data
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: submission
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select changed paths and inspect Markdown
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ && "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git -C submission diff --no-ext-diff --no-textconv --no-renames --name-only -z "$BASE_SHA...$HEAD_SHA" -- students/ > "$RUNNER_TEMP/student-paths.z"
+          python3 -I course/tools/validate-students.py \
+            --root submission --course-root course \
+            --changed-files "$RUNNER_TEMP/student-paths.z"
+      - name: Explain assessment scope
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## Student structure check
+          See the validation step for per-file results. A successful check only
+          means the selected submission structure was ready for review (or no
+          recognized challenge files changed). It does not establish learning,
+          permission, actual session recovery, mentoring, or graduation.
+          Missing/deleted submissions and attachments need explicit reviewer
+          attention. Human review remains required; no PR comment is attempted.
+          EOF
